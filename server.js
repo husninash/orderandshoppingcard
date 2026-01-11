@@ -1,11 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const cartRoutes = require('./src/cart');
-const ordersRoutes = require('./src/orders');
+const cartRoutes = require('./routes/cartRoutes');
+const orderRoutes = require('./routes/orderRoutes');
 
 const app = express();
-const PORT = process.env.PORT || 3003;
+const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors());
@@ -20,13 +20,13 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/api/cart', cartRoutes);
-app.use('/api/orders', ordersRoutes);
+app.use('/api/orders', orderRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
     res.status(200).json({
         success: true,
-        message: 'Cart Service is running',
+        message: 'Order & Cart Service is running',
         timestamp: new Date().toISOString()
     });
 });
@@ -35,16 +35,32 @@ app.get('/health', (req, res) => {
 app.get('/', (req, res) => {
     res.status(200).json({
         success: true,
-        message: 'Welcome to Cart Service API',
-        version: '1.0.0',
+        message: 'Welcome to Order & Cart Service API',
+        version: '2.0.0',
+        features: [
+            'Shopping Cart Management',
+            'Product Catalog Integration',
+            'Order Management',
+            'Stock Validation'
+        ],
         endpoints: {
             cart: {
-                add: 'POST /api/cart/add',
-                get: 'GET /api/cart',
-                remove: 'DELETE /api/cart/remove/:item_id',
-                clear: 'DELETE /api/cart/clear'
+                add: 'POST /api/cart/add - Add product to cart with stock validation',
+                get: 'GET /api/cart - Get current cart',
+                remove: 'DELETE /api/cart/remove/:item_id - Remove item from cart',
+                clear: 'DELETE /api/cart/clear - Clear all items from cart'
             },
-            health: 'GET /health'
+            orders: {
+                create: 'POST /api/orders - Create order from cart',
+                get_all: 'GET /api/orders - Get all orders',
+                get_one: 'GET /api/orders/:order_id - Get order by ID',
+                update_status: 'PATCH /api/orders/:order_id/status - Update order status'
+            },
+            health: 'GET /health - Health check'
+        },
+        documentation: {
+            integration: '/docs/INTEGRASI_CATALOG_SERVICE.md',
+            testing: '/docs/API_TESTING.md'
         }
     });
 });
